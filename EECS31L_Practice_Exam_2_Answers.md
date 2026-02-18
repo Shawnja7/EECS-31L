@@ -36,14 +36,14 @@ Replication first (`{3{y}}` = repeat y three times), then concatenate with x.
 
 ## Question 4: (A) 2'b00
 
-In `casez`, both `?` and `z` are treated as don't-care.
+In `casez`, `z` is treated as don't-care — in BOTH the case items AND the selector.
 
 `sel = 4'b10z0` — the `z` in the input is also treated as don't-care.
 
 Check each case in order:
-- `4'b1??0`: Does `10z0` match `1??0`? The `?` matches anything, and `z` in the input is don't-care. YES — match! `out = 2'b00`
+- `4'b1zz0`: Does `10z0` match `1zz0`? The `z`s in the case item match anything, and `z` in the input is also don't-care. YES — match! `out = 2'b00`
 
-First match wins. The later cases are never reached.
+First match wins. The later cases are never reached, even though `4'b10z0` looks like a more "specific" match.
 
 ---
 
@@ -239,14 +239,14 @@ Shift right by 4, fill left with 0:
 
 ## Bonus 7: (A) 2'b00
 
-In `casez`, `z` and `?` are both don't-care — in BOTH the case items AND the selector.
+In `casez`, `z` is treated as don't-care — in BOTH the case items AND the selector.
 
 `sel = 4'b10z1` — the `z` in the input is treated as don't-care.
 
-Check first case: `4'b10?1` — does `10z1` match `10?1`?
+Check first case: `4'b10z1` — does `10z1` match `10z1`?
 - Bit 3: 1=1 ✓
 - Bit 2: 0=0 ✓
-- Bit 1: z matches ? (both don't-care) ✓
+- Bit 1: z in selector is don't-care, z in case item is don't-care ✓
 - Bit 0: 1=1 ✓
 YES — first match wins! `out = 2'b00`
 
