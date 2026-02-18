@@ -26,6 +26,7 @@ endmodule
 ```
 
 ---
+testing module error
 
 ## Mistake 2: Using `wire` Inside an `always` Block
 
