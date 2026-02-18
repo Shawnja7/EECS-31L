@@ -1080,3 +1080,45 @@ So `a` is already 7 by the time `b = a` executes.
 | Write | Immediate (before next line) | Deferred (end of time step) |
 | Order matters? | YES | NO (all writes happen together) |
 | Use for | Combinational logic (`@(*)`) | Sequential logic (`@(posedge clk)`) |
+
+---
+
+## Q15: "How does the `wait` statement work?"
+
+`wait(condition)` pauses execution at that line until the condition becomes true.
+Once it's true, execution continues to the next statement.
+
+Think of it like standing at a locked door — you do nothing until someone unlocks it, then you walk through.
+
+**Key difference from `@(posedge clk)`:**
+- `@(posedge clk)` = wait for a specific CHANGE (an edge)
+- `wait(ready == 1)` = wait for a specific VALUE (a level)
+
+### Example:
+
+```verilog
+initial begin
+    a = 0;
+    wait (ready == 1) #10 a = 1;
+end
+
+initial begin
+    #25;
+    ready = 1;
+end
+```
+
+**Timeline:**
+
+| Time | What happens |
+|------|-------------|
+| 0 | `a = 0`, then hits `wait(ready == 1)` — ready is 0, so it PAUSES |
+| 0 | Block 2 starts waiting for `#25` |
+| 25 | Block 2 sets `ready = 1` |
+| 25 | Block 1 wakes up — wait condition is true! Proceeds to `#10 a = 1` |
+| 35 | After the 10-unit delay, `a = 1` finally executes |
+
+**The key:** `wait` itself adds NO delay. It just freezes until the condition is true.
+Then whatever comes after it (like `#10`) runs from THAT point in time.
+
+So `a` becomes 1 at time 25 + 10 = **35**.
