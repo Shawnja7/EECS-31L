@@ -15,8 +15,9 @@ reg [1:0] x = 2'b11;
 reg [1:0] y = 2'b01;
 result = {x, {3{y}}};
 ```
+11 01 01 01
 
-- (A) 8'b11010101
+- (A) 8'b11010101 this
 - (B) 8'b11010111
 - (C) 8'b01010111
 - (D) 8'b11101010
@@ -37,7 +38,7 @@ module foo(a, b, z);
 
 - (B)
 ```verilog
-module foo(a, b, z);
+module foo(a, b, z); this, if you assign somethign it needs to be a reg
     input a, b;
     output z;
     reg z;
@@ -74,7 +75,7 @@ always @(posedge clk)
 Which statement is TRUE?
 
 - (A) Module A is a D flip-flop and Module B is a D-latch
-- (B) Module A is a D-latch and Module B is a D flip-flop
+- (B) Module A is a D-latch and Module B is a D flip-flop this, posedge clk is a flip flop holds memory. where d latch
 - (C) Both are D-latches
 - (D) Both are D flip-flops
 
@@ -87,8 +88,8 @@ Given this code, what is the value of `out` when `sel = 4'b10z0`?
 ```verilog
 always @(*) begin
     casez (sel)
-        4'b1??0: out = 2'b00;
-        4'b10?0: out = 2'b01;
+        4'b1zz0: out = 2'b00;
+        4'b10z0: out = 2'b01;
         4'b1010: out = 2'b10;
         default: out = 2'b11;
     endcase
@@ -96,7 +97,7 @@ end
 ```
 
 - (A) 2'b00
-- (B) 2'b01
+- (B) 2'b01 this z is a dont care
 - (C) 2'b10
 - (D) 2'b11
 
@@ -382,7 +383,7 @@ Given `sel = 4'b10z1`, what does this code output?
 ```verilog
 always @(*) begin
     casez (sel)
-        4'b10?1: out = 2'b00;
+        4'b10z1: out = 2'b00;
         4'b1001: out = 2'b01;
         4'b1011: out = 2'b10;
         default: out = 2'b11;
