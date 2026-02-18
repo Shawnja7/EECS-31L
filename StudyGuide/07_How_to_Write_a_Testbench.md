@@ -24,7 +24,7 @@ Here's the skeleton — memorize this structure:
 
 ```verilog
 // Step 1: Module with NO ports
-module my_testbench;
+module my_testbench();
 
     // Step 2: Declare signals
     //   - Inputs to the DUT  → reg  (YOU drive them)
@@ -86,7 +86,7 @@ endmodule
 A testbench has NO inputs and NO outputs. It's self-contained.
 
 ```verilog
-module my_testbench;       // <-- nothing in parentheses!
+module my_testbench();       // <-- nothing in parentheses!
     ...
 endmodule
 ```
@@ -214,7 +214,7 @@ keeps running forever.
 ### Example 1: Testbench for a 2-to-1 MUX (no clock)
 
 ```verilog
-module mux2to1_tb;
+module mux2to1_tb();
 
     // Signals
     reg a, b, sel;
@@ -249,7 +249,7 @@ endmodule
 ### Example 2: Testbench for a D Flip-Flop (with clock)
 
 ```verilog
-module dff_tb;
+module dff_tb();
 
     // Signals
     reg clk, d;
@@ -287,7 +287,7 @@ endmodule
 ### Example 3: Testbench for a 4-bit Counter (with clock + reset)
 
 ```verilog
-module counter4_tb;
+module counter4_tb();
 
     // Signals
     reg clk, rst;

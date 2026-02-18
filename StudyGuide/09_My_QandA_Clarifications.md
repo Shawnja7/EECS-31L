@@ -930,3 +930,153 @@ just change `16` to `1024`. Without the loop you'd need 1024 lines.
 **Bottom line:** "Initialize memory" = set all slots in an array to a known
 value (usually 0) so you don't get `x` garbage when you read from them.
 This is done in an `initial` block because it's a one-time setup for simulation.
+
+---
+
+## Q11: "What does 'out holds its previous value = latch' mean?" (Mistake 9)
+
+In combinational logic, every output should be determined ONLY by the current
+inputs — no memory, no "remembering."
+
+Look at this broken code:
+```verilog
+always @(*) begin
+    if (sel)
+        out = a;
+    // No else! When sel=0, nothing assigns to 'out'
+end
+```
+
+When `sel = 1`: `out = a` — no problem.
+When `sel = 0`: there's no assignment. So `out` keeps whatever value it had
+before. It **remembers** its old value.
+
+That "remembering" IS a latch. A latch is a hardware element that stores a
+value. The synthesizer sees that `out` needs to hold its value when `sel=0`,
+so it builds a latch — extra hardware you didn't want.
+
+**Light switch analogy:**
+- **With else (correct):** Switch up = light on, switch down = light off.
+  Output always determined by current input.
+- **Without else (latch):** Switch up = light on, switch down = light stays
+  however it was last. The light "remembers" — that requires a latch.
+
+**Fix:** Always assign `out` in every branch:
+```verilog
+always @(*) begin
+    if (sel)
+        out = a;
+    else
+        out = b;    // out ALWAYS gets a value — no latch needed
+end
+```
+
+**Same problem with `case`:** If you don't cover all cases AND don't have a
+`default`, the missing cases create latches too (Mistake 10).
+
+---
+
+## Q12: "How is `always #5 clk = ~clk` a period of 10, not 5?"
+
+The `#5` is the delay between each **toggle**, not the full cycle.
+
+```verilog
+initial clk = 0;
+always #5 clk = ~clk;
+```
+
+Trace it step by step:
+```
+Time 0:   clk = 0   (from initial)
+Time 5:   clk = ~0 = 1   (toggle #1, waited 5)
+Time 10:  clk = ~1 = 0   (toggle #2, waited 5)
+Time 15:  clk = ~0 = 1   (toggle #3, waited 5)
+Time 20:  clk = ~1 = 0   ...
+
+clk:  0_____1_____0_____1_____0
+      |  5  |  5  |  5  |  5  |
+      |<--------->|
+       one full cycle = 10
+```
+
+One full clock cycle = HIGH + LOW. Each half takes 5 time units:
+- Half period = 5 (the `#5`)
+- Full period = 5 + 5 = **10 time units**
+
+**General rule:** `always #N clk = ~clk` gives a clock with period = **2N**.
+
+---
+
+## Q13: "How does `#5` relate to `=` vs `<=`? Does `=` make it instant?"
+
+Yes. In `always #5 clk = ~clk`, the `=` assigns **instantly**. The `#5` is
+what creates the timing gap. They do two separate jobs:
+
+1. `#5` = "pause here for 5 time units"
+2. `= ~clk` = "now instantly flip clk"
+
+The `=` itself has zero delay. At time 5, clk snaps from 0 to 1 immediately.
+
+**Would `<=` change anything here?**
+No — `always #5 clk <= ~clk` behaves the same in this case because there's
+only ONE assignment. The `=` vs `<=` difference only matters when you have
+MULTIPLE assignments in the same block (like flip-flop code with several regs).
+
+**How is this different from `assign` delays?**
+
+| Context                     | What `#5` does                          | Assignment timing         |
+|-----------------------------|-----------------------------------------|---------------------------|
+| `always #5 clk = ~clk`     | Pauses execution for 5 units            | Instant after the pause   |
+| `assign #5 y = a & b`      | Gate delay — output delayed 5 units     | 5 units after input changes |
+
+In `always`: the **pause** comes first, then you assign instantly.
+In `assign`: the input change triggers it, then the **output is delayed**.
+
+---
+
+## Q14: "How does non-blocking (`<=`) actually work? What do you mean 'end of time step'?"
+
+Non-blocking works in TWO phases:
+
+1. **READ phase (instant):** All right-hand sides are evaluated NOW using
+   current values
+2. **WRITE phase (end of time step):** All left-hand sides are updated
+   simultaneously AFTER every read is done
+
+### Example — Swap with `<=`
+
+```verilog
+// Before clock edge: a = 3, b = 7
+always @(posedge clk) begin
+    a <= b;    // READ b = 7 (save it for later)
+    b <= a;    // READ a = 3 (still 3! hasn't changed yet)
+end
+// END OF TIME STEP: write a = 7, write b = 3
+// Result: a = 7, b = 3  ← they SWAPPED!
+```
+
+Both reads happen first, THEN both writes happen together at the end.
+That's why `a` still has its old value when `b <= a` reads it.
+
+### Compare — NO swap with `=`
+
+```verilog
+// Before clock edge: a = 3, b = 7
+always @(posedge clk) begin
+    a = b;     // READ b=7, WRITE a=7 IMMEDIATELY
+    b = a;     // READ a=7 (already changed!), WRITE b=7
+end
+// Result: a = 7, b = 7  ← no swap, just copied
+```
+
+With blocking, each line finishes completely before the next one runs.
+So `a` is already 7 by the time `b = a` executes.
+
+### Summary
+
+| | Blocking `=` | Non-blocking `<=` |
+|---|---|---|
+| Read | Immediate | Immediate |
+| Write | Immediate (before next line) | Deferred (end of time step) |
+| Order matters? | YES | NO (all writes happen together) |
+| Use for | Combinational logic (`@(*)`) | Sequential logic (`@(posedge clk)`) |

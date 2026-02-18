@@ -10,8 +10,8 @@ This is a heavily tested topic. Pay close attention to the examples.
 |----------|-------------------------|---------------------------------------|
 | `<<`     | Logical Left Shift      | Shifts bits LEFT, fills right with 0  |
 | `>>`     | Logical Right Shift     | Shifts bits RIGHT, fills left with 0  |
-| `<<<`    | Arithmetic Left Shift   | Same as `<<` (fills right with 0)     |
-| `>>>`    | Arithmetic Right Shift  | Shifts right, fills left with SIGN BIT|
+| `<<<`    | Arithmetic Left Shift   | Shifts left, fills right with LSB     |
+| `>>>`    | Arithmetic Right Shift  | Shifts right, fills left with MSB     |
 
 ---
 
@@ -180,20 +180,29 @@ The difference only shows when the sign bit is 1.
 | `4'b1010 >> 1`           | `1010` | `0101` | 0s        | Logical right, fill left     |
 | `4'b1010 >>> 1` (signed) | `1010` | `1101` | MSB (1)   | Arithmetic right, sign = 1   |
 | `4'b0110 >>> 1` (signed) | `0110` | `0011` | MSB (0)   | Arithmetic right, sign = 0   |
-| `4'b1010 <<< 1` (signed) | `1010` | `0100` | 0s        | Same as <<, always fills 0   |
+| `4'b1001 <<< 1` (slide)  | `1001` | `0011` | LSB (1)   | Per slide: fills with LSB      |
+| `4'b1001 <<< 1` (Verilog)| `1001` | `0010` | 0         | Per IEEE: same as <<           |
 
 ---
 
 ## Rules to Memorize
 
-1. **`<<` and `>>`** ALWAYS fill with **0**. No exceptions.
-2. **`<<<`** is the SAME as `<<`. Always fills with 0. (Boring.)
-3. **`>>>`** is the special one:
-   - On **signed** values: fills with the **sign bit** (MSB)
-   - On **unsigned** values: same as `>>` (fills with 0)
-4. Left shift by N = multiply by 2^N (bits moving toward the big end)
-5. Right shift by N = divide by 2^N (bits moving toward the small end)
-6. Bits that shift "off the edge" are GONE forever
+1. **`<<`** shifts left, fills right with **0**
+2. **`>>`** shifts right, fills left with **0**
+3. **`<<<`** — CONFLICT between slides and actual Verilog:
+   - **Slide (Lecture 3, slide 17):** fills right with LSB → `1001 <<< 1` = `0011`
+   - **Actual Verilog (IEEE standard):** same as `<<`, fills with 0 → `1001 <<< 1` = `0010`
+   - **For the exam:** follow whatever your professor expects (likely the slide)
+4. **`>>>`** shifts right, fills left with **MSB** (leftmost bit / sign bit)
+5. Left shift by N = multiply by 2^N (bits moving toward the big end)
+6. Right shift by N = divide by 2^N (bits moving toward the small end)
+7. Bits that shift "off the edge" are GONE forever
+
+**Quick memory trick:**
+- Logical (`<<`, `>>`) = always fill with **0**
+- Arithmetic (`<<<`, `>>>`) = fill with the bit on the **opposite end**
+  - `<<<` shifts left, fills from the RIGHT with the rightmost bit (LSB)
+  - `>>>` shifts right, fills from the LEFT with the leftmost bit (MSB)
 
 ---
 
