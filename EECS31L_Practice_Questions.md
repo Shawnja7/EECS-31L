@@ -373,8 +373,8 @@ endmodule
 ```verilog
 module mux(a, b, sel, out);
     input a, b, sel;
-    output out; double instantiation of out 
-    wire out;
+    output out; 
+    wire out; used in always should be reg
 
     always @(a or b or sel) begin
         if (sel)
@@ -391,10 +391,10 @@ endmodule
 ```verilog
 module test(A, B, Result);
     input A, B;
-    output Result;
+    output Result; should be reg?
 
     always @(A or B) begin
-        assign Result = A & B;
+        assign Result = A & B; should not define assign in here, 
     end
 endmodule
 ```
@@ -409,7 +409,7 @@ module counter(clk, count);
     reg [3:0] count;
 
     always @(posedge clk)
-        count <= count + 1;
+        count <= count + 1; bad sequence of steps. should not have two always should use if else 
 
     always @(negedge clk)
         count <= count - 1;

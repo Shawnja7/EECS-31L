@@ -96,8 +96,8 @@ always @(*) begin
 end
 ```
 
-- (A) 2'b00
-- (B) 2'b01 this z is a dont care
+- (A) 2'b00 this first match wins 
+- (B) 2'b01 t
 - (C) 2'b10
 - (D) 2'b11
 
@@ -108,7 +108,7 @@ end
 Match each expression to its decimal value:
 
 ```
-(a) 8'hA5
+(a) 8'hA5 
 (b) 4'd13
 (c) 6'o17
 (d) 8'b0000_1100
@@ -130,14 +130,14 @@ reg [7:0] data = 8'b1101_0110;
 
 What is the value of `{data[7:4], data[1:0]}`?
 
-- (A) 6'b110110
+- (A) 6'b110110 
 - (B) 6'b110101
 - (C) 6'b110110
 - (D) 6'b110110
 
 Wait — let me fix the choices:
 
-- (A) 6'b1101_10
+- (A) 6'b1101_10 this 
 - (B) 6'b1101_01
 - (C) 6'b0110_10
 - (D) 6'b0110_01
@@ -167,7 +167,7 @@ At what simulation time does `a` become 1?
 
 - (A) Time 10
 - (B) Time 25
-- (C) Time 35
+- (C) Time 35 this, 
 - (D) `a` never becomes 1
 
 ---
@@ -177,14 +177,14 @@ At what simulation time does `a` become 1?
 What does each expression evaluate to?
 
 ```
-(a) 4'b10x1 == 4'b10x1
-(b) 4'b10x1 === 4'b10x1
-(c) 4'b10x1 === 4'b1011
-(d) 4'b10x1 == 4'b1011
+(a) 4'b10x1 == 4'b10x1 x
+(b) 4'b10x1 === 4'b10x1 1
+(c) 4'b10x1 === 4'b1011 0
+(d) 4'b10x1 == 4'b1011 x
 ```
 
 - (A) (a)=1, (b)=1, (c)=0, (d)=x
-- (B) (a)=x, (b)=1, (c)=0, (d)=x
+- (B) (a)=x, (b)=1, (c)=0, (d)=x this 
 - (C) (a)=x, (b)=1, (c)=0, (d)=0
 - (D) (a)=0, (b)=1, (c)=0, (d)=x
 
@@ -200,7 +200,7 @@ reg [7:0] mem [0:3];
 Which of the following statements is ILLEGAL?
 
 - (A) `mem[0] = 8'hFF;`
-- (B) `mem[2][3] = 1'b1;`
+- (B) `mem[2][3] = 1'b1;` this 
 - (C) `mem[0] = mem[1] + mem[2];`
 - (D) `wire [7:0] out = mem[1];`
 
@@ -224,8 +224,8 @@ module counter(clk, rst, count);
 endmodule
 ```
 
-- (A) `count` must be declared as `reg`
-- (B) Sensitivity list should include `rst`
+- (A) `count` must be declared as `reg` yes were assigning something to reg 
+- (B) Sensitivity list should include `rst` 
 - (C) Cannot use `+` operator in always block
 - (D) Both (A) and (B)
 
@@ -243,9 +243,9 @@ initial begin
 end
 
 always @(posedge clk) begin
-    a <= 1;
-    b <= a;
-    c <= b;
+    a <= 1; 1
+    b <= a; 0
+    c <= b; 0
 end
 ```
 
@@ -279,7 +279,7 @@ always @(*) begin
 end
 ```
 
-- (A) 3'b001
+- (A) 3'b001 this 
 - (B) 3'b010
 - (C) 3'b011
 - (D) 3'b000
@@ -301,7 +301,7 @@ end
 
 - (A) A 4-to-1 MUX
 - (B) A 2-to-1 MUX
-- (C) A 2-to-1 MUX with a latch on `out`
+- (C) A 2-to-1 MUX with a latch on `out`this 
 - (D) A decoder
 
 ---
@@ -315,7 +315,7 @@ reg [7:0] x;
 x = 4'b1010;
 ```
 
-- (A) 8'b0000_1010
+- (A) 8'b0000_1010 this 
 - (B) 8'b1111_1010
 - (C) 8'b1010_0000
 - (D) 8'b1010_1010
